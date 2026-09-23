@@ -11,16 +11,31 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 if (location.hash) history.replaceState(history.state, '', location.pathname + location.search);
 window.addEventListener('pageshow', () => window.scrollTo({top: 0, left: 0, behavior: 'instant'}));
 </script>
-<link rel="icon" href="assets/logo.jpg"><link rel="stylesheet" href="styles.css?v=20260923topo">
-<script src="catalog.js?v=20260923topo" defer></script><script src="app.js?v=20260923topo" defer></script>
+<link rel="icon" href="assets/logo.jpg"><link rel="stylesheet" href="styles.css?v=20260923orcamento">
+<script src="catalog.js?v=20260923orcamento" defer></script><script src="app.js?v=20260923orcamento" defer></script>
 </head>
 <body>
 <a class="skip" href="#catalogo">Ir para as telas</a>
 <div class="preview">PRÉVIA PARA REVISÃO <span>Preços propostos. Confirme o orçamento no atendimento.</span></div>
-<header><div class="wrap topbar"><a href="#" class="identity"><img src="assets/logo.jpg" alt="Peixoto Cell" width="48" height="48"><span>PEIXOTO CELL<small>ASSISTÊNCIA & ACESSÓRIOS</small></span></a><nav aria-label="Principal"><a href="#catalogo">Ver preços</a><a href="#tipos">Tipos de tela</a><a href="#localizacao">Como chegar</a><a href="#ajuda">Dúvidas</a><a class="contact" href="https://wa.me/5511915068682" target="_blank" rel="noopener noreferrer">WhatsApp ↗</a></nav></div></header>
+<header><div class="wrap topbar"><a href="#" class="identity"><img src="assets/logo.jpg" alt="Peixoto Cell" width="48" height="48"><span>PEIXOTO CELL<small>ASSISTÊNCIA & ACESSÓRIOS</small></span></a><nav aria-label="Principal"><a href="#orcamento">Faça seu orçamento</a><a href="#catalogo">Ver preços</a><a href="#tipos">Tipos de tela</a><a href="#localizacao">Como chegar</a><a href="#ajuda">Dúvidas</a><a class="contact" href="https://wa.me/5511915068682" target="_blank" rel="noopener noreferrer">WhatsApp ↗</a></nav></div></header>
 <main>
-<section class="hero"><div class="wrap hero-grid"><div><p class="eyebrow">PEIXOTO CELL · ITAPEVI, SP</p><h1>Tela nova.<br><em>Menor preço primeiro.</em></h1><p class="intro">Encontre seu modelo, compare as opções e veja a estimativa da troca com instalação e película.</p><a href="#catalogo" class="button primary">Ver telas mais baratas ↓</a><p class="hero-start">Trocas a partir de <strong id="starting-price"></strong><small>Consulte seu modelo · instalação e película incluídas</small></p></div><div class="hero-art"><img src="assets/logo.jpg" alt="Peixoto Cell, identidade em verde e cobre" width="1280" height="832"><div class="art-caption"><span>TELA + INSTALAÇÃO + PELÍCULA</span><span>PEIXOTO ↗</span></div></div></div></section>
+<section class="hero"><div class="wrap hero-grid"><div><p class="eyebrow">PEIXOTO CELL · ITAPEVI, SP</p><h1>Tela nova.<br><em>Menor preço primeiro.</em></h1><p class="intro">Encontre seu modelo, compare as opções e veja a estimativa da troca com instalação e película.</p><a href="#orcamento" class="button primary">Faça seu orçamento ↓</a> <a href="#catalogo" class="button hero-catalog-link">Ver telas mais baratas</a><p class="hero-start">Trocas a partir de <strong id="starting-price"></strong><small>Consulte seu modelo · instalação e película incluídas</small></p></div><div class="hero-art"><img src="assets/logo.jpg" alt="Peixoto Cell, identidade em verde e cobre" width="1280" height="832"><div class="art-caption"><span>TELA + INSTALAÇÃO + PELÍCULA</span><span>PEIXOTO ↗</span></div></div></div></section>
 <div class="steps"><div class="wrap"><span><b>01</b> Encontre seu aparelho</span><span><b>02</b> Compare telas e preços</span><span><b>03</b> Confirme pelo WhatsApp</span></div></div>
+<section class="wrap quote-builder" id="orcamento" aria-labelledby="quote-title">
+<div><p class="eyebrow">SEU ORÇAMENTO EM POUCOS PASSOS</p><h2 id="quote-title">Quanto fica a troca da sua tela?</h2><p>Escolha o celular e receba as opções, da mais econômica à mais cara. Não precisa saber qual tipo de tela comprar.</p></div>
+<form id="quote-form" class="quote-form">
+<label>1. Marca<select id="quote-brand" required></select></label>
+<label>2. Busque seu modelo<input id="quote-search" type="search" placeholder="Ex.: 13 Pro, A15, G54" autocomplete="off"></label>
+<label>3. Confirme o modelo<select id="quote-model" required disabled aria-describedby="quote-model-status"></select></label>
+<button id="quote-generate" class="button primary" type="submit" disabled>Gerar meu orçamento</button>
+</form>
+<p id="quote-model-status" class="quote-status" role="status"></p>
+<a class="help-link" href="https://wa.me/5511915068682?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Preciso%20de%20ajuda%20para%20identificar%20meu%20celular%20e%20pedir%20um%20or%C3%A7amento." target="_blank" rel="noopener noreferrer">Não encontrou ou não sabe o modelo? Peça ajuda ↗</a>
+<div id="quote-result" class="quote-result" hidden tabindex="-1" aria-labelledby="quote-result-title">
+<h3 id="quote-result-title">Seu orçamento estimado</h3><div id="quote-text" class="quote-text"></div>
+<div class="quote-actions"><a id="quote-whatsapp" class="button primary" target="_blank" rel="noopener noreferrer">Tirar dúvidas e confirmar no WhatsApp ↗</a><button id="quote-copy" class="button outline" type="button">Copiar orçamento</button></div>
+<p id="quote-copy-status" class="quote-status" role="status"></p>
+</div></section>
 <section class="wrap catalog" id="catalogo"><div class="section-heading"><div><p class="eyebrow">ENCONTRE A TELA QUE CABE NO SEU BOLSO</p><h2>Qual é o seu celular?</h2></div><a class="help-link" href="#identificar">Não sei o modelo ↗</a></div>
 <div class="budget-shortcuts"><span>Escolha sua faixa:</span><button type="button" data-budget="300">Até R$ 300</button><button type="button" data-budget="500">Até R$ 500</button><button type="button" data-budget="">Ver todas</button></div>
 <div class="offers-intro"><div><b>Escolha a tela que cabe no seu orçamento.</b><p>Compare os preços com instalação e película incluídas. Encontre seu modelo e confirme o orçamento pelo WhatsApp.</p></div><button id="see-offers" type="button" hidden>Ver promoções ↗</button></div><label class="offers-filter" style="display:none"><input id="only-offers" type="checkbox"> Mostrar só promoções no Pix</label>

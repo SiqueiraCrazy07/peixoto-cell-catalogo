@@ -27,3 +27,53 @@ document.querySelectorAll('[data-budget]').forEach(b=>b.onclick=()=>{reset();$('
 $('#see-offers').onclick=()=>{reset();$('#only-offers').checked=true;refresh();$('#catalogo').scrollIntoView({behavior:'smooth'});};
 $('#starting-price').textContent=money(Math.min(...CATALOG.map(p=>cheapest(p).price)));
 brands();models();render();
+
+// Exact model matching keeps Pro, Pro Max, 4G and 5G quotes separate.
+function quoteOptions(catalog, chosenBrand, model){
+ const unique=new Map();
+ for(const p of catalog.filter(p=>p.brand===chosenBrand&&p.model===model)){
+  for(const v of p.variants){
+   const label=[...new Set([p.type==='Outras linhas'?'':p.type,p.line,v.name].filter(Boolean))].join(' · ');
+   const key=JSON.stringify([label,v.price,!!p.needsCheck,!!v.originalPrice]);
+   unique.set(key,{label,price:v.price,needsCheck:p.needsCheck,pix:!!v.originalPrice});
+  }
+ }
+ return [...unique.values()].sort((a,b)=>a.price-b.price||a.label.localeCompare(b.label,'pt-BR'));
+}
+function quoteMessage(chosenBrand,model,options){
+ if(!options.length)return '';
+ const name=model.toLowerCase().startsWith(chosenBrand.toLowerCase())?model:chosenBrand+' '+model;
+ return `Olá, tudo bem?\n\nPara a troca de tela do ${name}, temos estas opções de orçamento:\n\n`+
+ options.map(o=>`• ${o.label}: ${money(o.price)}${o.pix?' no Pix':''}${o.needsCheck?' — exige avaliação':''}`).join('\n')+
+ '\n\nTodas as opções incluem a tela, a instalação e uma película de proteção. Os valores variam conforme o tipo de tela, a linha e a montagem.\n\nEsta é uma estimativa. Confirme compatibilidade, disponibilidade e condições do aparelho no atendimento. Outros reparos e taxas de parcelamento são avaliados separadamente.\n\nPara mais informações, fale com a Peixoto Cell pelo WhatsApp:\nhttps://wa.me/5511915068682';
+}
+let generatedQuote='';
+function clearQuote(){generatedQuote='';$('#quote-result').hidden=true;$('#quote-copy-status').textContent='';}
+function quoteModels(){
+ clearQuote();
+ const chosenBrand=$('#quote-brand').value,q=normal($('#quote-search').value);
+ const names=[...new Set(CATALOG.filter(p=>p.brand===chosenBrand).map(p=>p.model))].filter(m=>normal(m).includes(q)).sort((a,b)=>a.localeCompare(b,'pt-BR',{numeric:true}));
+ $('#quote-model').innerHTML='<option value="">Selecione o modelo exato</option>'+names.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('');
+ $('#quote-model').disabled=!chosenBrand||!names.length;
+ $('#quote-generate').disabled=true;
+ $('#quote-model-status').textContent=!chosenBrand?'Comece escolhendo a marca.':names.length?`${names.length} modelos encontrados. Confira também a versão: Pro, Pro Max, 4G ou 5G.`:'Modelo não encontrado. Fale conosco pelo WhatsApp para consultar.';
+}
+$('#quote-brand').innerHTML='<option value="">Selecione a marca</option>'+[...new Set(CATALOG.map(p=>p.brand))].sort().map(b=>`<option>${esc(b)}</option>`).join('');
+$('#quote-brand').onchange=()=>{$('#quote-search').value='';quoteModels();};
+$('#quote-search').oninput=quoteModels;
+$('#quote-model').onchange=()=>{clearQuote();$('#quote-generate').disabled=!$('#quote-model').value;};
+$('#quote-form').onsubmit=e=>{
+ e.preventDefault();
+ const chosenBrand=$('#quote-brand').value,model=$('#quote-model').value;
+ const options=quoteOptions(CATALOG,chosenBrand,model);
+ generatedQuote=quoteMessage(chosenBrand,model,options);
+ if(!generatedQuote)return;
+ $('#quote-text').textContent=generatedQuote;
+ $('#quote-whatsapp').href='https://wa.me/5511915068682?text='+encodeURIComponent('Olá, tudo bem? Consultei este orçamento na vitrine e gostaria de mais informações:\n\n'+generatedQuote.replace(/^Olá, tudo bem\?\n\n/,'').replace(/\n\nPara mais informações,[\s\S]*$/,''));
+ $('#quote-result').hidden=false;$('#quote-result').focus();
+};
+$('#quote-copy').onclick=async()=>{
+ try{await navigator.clipboard.writeText(generatedQuote);$('#quote-copy-status').textContent='Orçamento copiado!';}
+ catch{$('#quote-copy-status').textContent='Não foi possível copiar automaticamente. Selecione o texto do orçamento e copie.';}
+};
+quoteModels();
